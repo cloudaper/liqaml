@@ -1,6 +1,6 @@
 # Liqaml
 
-Use Liquid template language with Yaml.
+Use Liquid template language with Yaml to process nested translations.
 
 ## Installation
 
@@ -18,22 +18,22 @@ Or install it yourself as:
 
     $ gem install liqaml
 
-Then generate necessary files/folders:
-
-    $ liqaml install
-
 ## Usage
 
 ```ruby
 require 'liqaml'
 
-Liquaml.process_all
+# Set array of file paths that need to be processed and targets for new yaml and json files
+arr = ['locales/en.yml', 'locales/cs.yml',]
+yaml_target = 'liqaml/yamls'
+json_target = 'liqaml/jsons'
+
+Liqaml.new(arr, yaml_target, json_target).process_and_convert
+
+# Optionally you can also provide processing count argument for deeper nesting if needed (default is 10)
+process_count = 50
+
+Liqaml.new(arr, yaml_target, json_target, process_count).process_and_convert
 ```
 
-## TODO
-- app/filters in DM (generate by command with IcuFilters file?) or within gem?
-- generate folder where unprocessed yaml files will be stored ...
-- ... and define where the processed yamls and jsons will be
--> test locally with DM
-
-- rspec few basic tests
+Note: Your translation yaml files should have corresponding names to it's content, so `en.yml` file starts with "en: ..."

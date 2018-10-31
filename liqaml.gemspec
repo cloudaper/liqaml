@@ -8,11 +8,11 @@ Gem::Specification.new do |spec|
   spec.version       = Liqaml::VERSION
   spec.authors       = ["Cloudaper"]
 
-  spec.summary       = %q{Use Liquid template language with Yaml}
+  spec.summary       = %q{Use Liquid template language with Yaml to process nested translations}
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  # TODO host = "https://github.com/cloudaper/liquaml" ?
+  # TODO host = "https://github.com/cloudaper/liqaml" ?
   if spec.respond_to?(:metadata)
     spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
   else
@@ -20,12 +20,7 @@ Gem::Specification.new do |spec|
       "public gem pushes."
   end
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(test|spec|features)/})
-  end
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.files = Dir['lib/**/*.rb']
 
   spec.add_runtime_dependency "message_format", "~> 0.0.5"
   spec.add_runtime_dependency "liquid",         "~> 4.0"
