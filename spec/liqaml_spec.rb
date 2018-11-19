@@ -3,6 +3,7 @@ RSpec.describe Liqaml do
     expect(Liqaml::VERSION).not_to be nil
   end
 
+  # make Liqaml obejct to be used for testing processing methods
   let(:liqaml) { Liqaml.new([], 'yaml_target', 'json_target') }
 
   describe 'processing' do
@@ -29,7 +30,8 @@ RSpec.describe Liqaml do
         template_yaml  = 'spec/fixtures/template_en.yml'
         processed_yaml = 'spec/fixtures/processed_en.yml'
 
-        processed = liqaml.process(template_yaml, 'en')
+        content = File.read(template_yaml)
+        processed = liqaml.process(content, 'en')
 
         expect((processed).to_yaml).to eql(File.read(processed_yaml))
       end

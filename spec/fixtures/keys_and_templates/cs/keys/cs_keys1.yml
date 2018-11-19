@@ -1,0 +1,11 @@
+cs:
+  languages:
+    english: angličtina
+    german: němčina
+    czech: čeština
+    italian: italština
+    french: francouština
+    chinese: čínština
+  languages1: "{{languages.english}}, {{languages.german}}, {{languages.czech}}"
+  languages2: "{{languages.italian}}, {{languages.french}}, {{languages.chinese}}"
+  all_languages: "{{languages1}}, {{languages2}}"

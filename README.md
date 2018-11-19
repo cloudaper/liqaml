@@ -20,11 +20,15 @@ Or install it yourself as:
 
 ## Usage
 
+First for each translation you need to have files in  2 folders(templates and keys), e.g. 'en/templates' and 'en/keys' with appropriate content in those files.
+Yaml keys that only provide variables for templates belong to keys files. Yaml keys that provide variables but also provide
+content for templates - and will appear in processed translations - belong to templates files.
+
 ```ruby
 require 'liqaml'
 
-# Set array of file paths that need to be processed and targets for new yaml and json files
-arr = ['locales/en.yml', 'locales/cs.yml',]
+# Set array of folders containing files that need to be processed and targets for new yaml and json files
+arr = ['locales/en', 'locales/cs',]
 yaml_target = 'liqaml/yamls'
 json_target = 'liqaml/jsons'
 
@@ -35,5 +39,3 @@ process_count = 50
 
 Liqaml.new(arr, yaml_target, json_target, process_count).process_and_convert
 ```
-
-Note: Your translation yaml files should have corresponding names to it's content, so `en.yml` file starts with "en: ..."

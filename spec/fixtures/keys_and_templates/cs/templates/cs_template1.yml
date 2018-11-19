@@ -1,0 +1,5 @@
+cs:
+  supported_languages: "Podporovane jazyky jsou {{all_languages}}"
+  hello_languages: "{{hello}}. {{supported_languages}}"
+  dog: Pes
+  cat: Kočka
