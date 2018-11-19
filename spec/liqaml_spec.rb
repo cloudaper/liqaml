@@ -3,7 +3,18 @@ RSpec.describe Liqaml do
     expect(Liqaml::VERSION).not_to be nil
   end
 
-  let(:liqaml) { Liqaml.new([], 'yaml_target', 'json_target') }
+  # make Liqaml obejct to be used for testing processing methods
+  let(:liqaml) { Liqaml.new(locales_array: [], tokens_array: [], yaml_target: 'yaml_target', json_target: 'json_target') }
+
+  describe 'extract_hash method' do
+    it 'extracts hash from icu filter argument' do
+      expect(Liqaml::Liqaml.extract_hash('color-blue')).to eql( { :color => 'blue' } )
+      expect(Liqaml::Liqaml.extract_hash('symbol-*')).to eql( { :symbol => '*' } )
+      expect(Liqaml::Liqaml.extract_hash('')).to eql( {} )
+      expect(Liqaml::Liqaml.extract_hash('color')).to eql( { :color => '' } )
+      expect(Liqaml::Liqaml.extract_hash('state-up-to-date')).to eql( { :state => 'up-to-date' } )
+    end
+  end
 
   describe 'processing' do
     context 'with correct syntax' do
@@ -17,30 +28,41 @@ RSpec.describe Liqaml do
       end
 
       it 'processes string with ICU filter' do
-        content   = "{{gender | icu: 'gender-male', 'sk'}} name is {{name}}"
-        variables = { 'name' => 'Jeff', 'gender' => "{ gender, select, male {His} female {Her} other {It's} }" }
+        content   = "{{name | icu: 'gender-male, name-Jeff', 'cs'}}"
+        variables = { 'name' => "{ gender, select, male {His} female {Her} other {It's} } name is {name}"}
 
         processed = liqaml.process_template(content, variables)
 
         expect(processed).to eql('His name is Jeff')
       end
 
-      it 'processes yaml file' do
-        template_yaml  = 'spec/fixtures/template_en.yml'
-        processed_yaml = 'spec/fixtures/processed_en.yml'
+      it 'processes and converts yaml files' do
+        expected_yaml1 = 'spec/fixtures/output/general.en.yml'
+        expected_json1 = 'spec/fixtures/output/general.en.json'
+        expected_yaml2 = 'spec/fixtures/output/messages.en.yml'
+        expected_json2 = 'spec/fixtures/output/messages.en.json'
 
-        processed = liqaml.process(template_yaml, 'en')
+        # test only 'en' locale
+        locales = Dir['spec/fixtures/locales/*.en.yml']
+        tokens  = Dir['spec/fixtures/tokens/*.yml']
+        target  = File.dirname(__FILE__) + '/tmp'
 
-        expect((processed).to_yaml).to eql(File.read(processed_yaml))
-      end
+        FileUtils.mkdir_p(target) unless File.directory?(target)
 
-      it 'converts yaml to json file' do
-        processed_yaml = 'spec/fixtures/processed_en.yml'
-        converted_yaml = 'spec/fixtures/converted_en.json'
+        # this also starts the actual processing for the test
+        expect { Liqaml.new(locales_array: locales, tokens_array: tokens, yaml_target: target,
+                              json_target: target).process_and_convert }.not_to raise_error
 
-        converted = liqaml.convert_to_json(processed_yaml)
+        processed1 = File.read(target + '/general.en.yml')
+        converted1 = File.read(target + '/general.en.json')
+        processed2 = File.read(target + '/messages.en.yml')
+        converted2 = File.read(target + '/messages.en.json')
 
-        expect(converted).to eql(File.read(converted_yaml))
+        # remove trailing whispaces when comparing
+        expect(processed1.strip).to eql(File.read(expected_yaml1).strip)
+        expect(converted1.strip).to eql(File.read(expected_json1).strip)
+        expect(processed2.strip).to eql(File.read(expected_yaml2).strip)
+        expect(converted2.strip).to eql(File.read(expected_json2).strip)
       end
     end
 
@@ -52,5 +74,6 @@ RSpec.describe Liqaml do
         expect { liqaml.process_template(content, variables) }.to raise_error(Liquid::SyntaxError)
       end
     end
+
   end
 end
