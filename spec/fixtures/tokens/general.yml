@@ -1,0 +1,4 @@
+supported_languges: "{{supported}} {{languages}} {{are}} {{languages_spec.all_languages}}"
+click_on_remember_me: "{{click_on}} {{remember_me}}"
+review: "{{description}} {{liked}}"
+icu_liquid_example: "{{liked | icu: 'liked-yes'}}. {{name | icu: 'gender-male, name-Jeff'}}"

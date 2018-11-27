@@ -1,0 +1,17 @@
+are: jsou
+text: text
+number: cislo
+click_on: kliknite na
+restrinctions:
+  must_be: musi byt
+  cant_be: nemuze byt
+supported: podporovane
+languages: jazyky
+languages_spec:
+    english: angličtina
+    german: němčina
+    czech: čeština
+    italian: italština
+    french: francouština
+    chinese: čínština
+    all_languages: "{{languages_spec.english}}, {{languages_spec.german}}, {{languages_spec.czech}}, {{languages_spec.italian}}, {{languages_spec.french}}, {{languages_spec.chinese}}"

@@ -1,0 +1,10 @@
+type: book
+art:
+  title: Lord of the Rings
+  author: JRR Tolkien
+  genre:
+    fiction:
+      fantasy:
+        foreign: "foreign fantasy fiction"
+description: "This {{type}}, {{art.title}} ({{art.genre.fiction.fantasy.foreign}}), was written by {{art.author}}."
+liked: "I liked it { liked, select, no {not too much} yes {very much} other {a bit} }"

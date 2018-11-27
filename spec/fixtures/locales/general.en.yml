@@ -1,0 +1,17 @@
+are: are
+text: text
+number: number
+click_on: click on
+restrinctions:
+  must_be: must be
+  cant_be: cant be
+supported: supported
+languages: languages
+languages_spec:
+    english: english
+    german: german
+    czech: czech
+    italian: italian
+    french: french
+    chinese: chinese
+    all_languages: "{{languages_spec.english}}, {{languages_spec.german}}, {{languages_spec.czech}}, {{languages_spec.italian}}, {{languages_spec.french}}, {{languages_spec.chinese}}"

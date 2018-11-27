@@ -24,57 +24,62 @@ module Liqaml
       string_hash.map { |k, v| [k.to_sym, v] }.to_h
     end
 
-    def initialize(translations_array, yaml_target, json_target, process_count)
-      @translations_array = translations_array
-      @yaml_target        = yaml_target
-      @json_target        = json_target
-      @process_count      = process_count
+    def initialize(locales_array, tokens_array, yaml_target, json_target, process_count)
+      @locales_array = locales_array
+      @tokens_array  = tokens_array
+      @yaml_target   = yaml_target
+      @json_target   = json_target
+      @process_count = process_count
     end
 
     # Process yaml files, convert them to json, then send new files to target folders
     def process_and_convert
-      # @translations_array = ['templates/en', 'templates/sk', 'templates/cs']
-      @translations_array.each do |translation|
-        # set locale from folder's name
-        @locale = File.basename(translation)
+      locales_filenames = @locales_array.map { |file| File.basename(file) }
 
-        # look into folder for keys and templates folders and make array of files for both of them
-        keys_files     = Dir["#{translation + '/keys'}/*.yml"]
-        template_files = Dir["#{translation + '/templates'}/*.yml"]
+      locale_patterns = locales_filenames.map { |filename| filename.scan(/\..*\./) }.uniq.flatten
+      # e.g. => [".en.", ".cs.", ...]
 
-        # make hashes from file contents
-        keys      = { @locale => yaml_files_to_hash(keys_files) }
-        templates = { @locale => yaml_files_to_hash(template_files) }
+      locale_patterns.each do |pattern|
+        @locale = pattern[1...-1]
+        locale_files = @locales_array.select { |filename| File.basename(filename).include?(pattern) }
 
-        preprocessed_keys = process(keys.to_yaml, @locale)
+        # join contents of locale_files to one hash of variables
+        variables_hash = yaml_files_to_hash(locale_files)
+        # process these variables
+        variables = process(variables_hash.to_yaml)
 
-        # join preprocessed keys + templates content to be used as variables in final processing
-        variables = preprocessed_keys[@locale].merge(templates[@locale])
+        # now process tokens and make new files from them
+        @tokens_array.each do |token_file|
+          output_filename_base = "#{File.basename(token_file, '.yml')}.#{@locale}"
+          yaml_file            = "#{@yaml_target}/#{output_filename_base}.yml"
+          json_file            = "#{@json_target}/#{output_filename_base}.json"
 
-        # now finally process template content with variables
-        processed_locale = process_template(templates.to_yaml, variables)
+          template = { @locale => yaml_files_to_hash([token_file]) }
 
-        File.open("#{@yaml_target}/#{@locale}.yml", 'w') { |f| f.write processed_locale }
+          processed_locale = process_template(template.to_yaml, variables)
 
-        json_locale = convert_to_json("#{@yaml_target}/#{@locale}.yml")
+          File.open(yaml_file, 'w') { |f| f.write processed_locale }
 
-        File.open("#{@json_target}/#{@locale}.json", 'w') { |f| f.write json_locale }
+          json_locale = convert_to_json(yaml_file)
+
+          File.open(json_file, 'w') { |f| f.write json_locale }
+        end
       end
 
-    rescue Liquid::SyntaxError => e
+    rescue Liquid::SyntaxError, Psych::SyntaxError => e
+      puts "Error for locale '#{@locale}'"
       puts e
-      puts "Found in folder #{@locale}"
     end
 
     def yaml_files_to_hash(files)
       hash = {}
-      files.each { |file| hash.merge!(YAML.load_file(file)[@locale]) }
+      files.each { |file| hash.merge!(YAML.load_file(file)) }
 
       hash
     end
 
-    def process(content, locale)
-      variables = YAML.load(content)[locale]
+    def process(content)
+      variables = YAML.load(content)
 
       YAML.load(process_template(content, variables))
     end
@@ -93,13 +98,13 @@ module Liqaml
     end
 
     def convert_to_json(yaml_file)
-      JSON.pretty_generate(YAML.load_file(yaml_file))
+      JSON.pretty_generate(YAML.load_file(yaml_file)[@locale])
     end
   end
 
   class << self
-    def new(translations_array, yaml_target, json_target, process_count = 10)
-      Liqaml.new(translations_array, yaml_target, json_target, process_count)
+    def new(locales_array:, tokens_array:, yaml_target:, json_target:, process_count: 10)
+      Liqaml.new(locales_array, tokens_array, yaml_target, json_target, process_count)
     end
   end
 end

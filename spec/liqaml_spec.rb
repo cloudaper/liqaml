@@ -4,7 +4,7 @@ RSpec.describe Liqaml do
   end
 
   # make Liqaml obejct to be used for testing processing methods
-  let(:liqaml) { Liqaml.new([], 'yaml_target', 'json_target') }
+  let(:liqaml) { Liqaml.new(locales_array: [], tokens_array: [], yaml_target: 'yaml_target', json_target: 'json_target') }
 
   describe 'processing' do
     context 'with correct syntax' do
@@ -26,23 +26,25 @@ RSpec.describe Liqaml do
         expect(processed).to eql('His name is Jeff')
       end
 
-      it 'processes yaml file' do
-        template_yaml  = 'spec/fixtures/template_en.yml'
-        processed_yaml = 'spec/fixtures/processed_en.yml'
+      it 'processes and converts yaml file' do
+        expected_yaml = 'spec/fixtures/output/general.en.yml'
+        expected_json = 'spec/fixtures/output/general.en.json'
 
-        content = File.read(template_yaml)
-        processed = liqaml.process(content, 'en')
+        # test only 'en' locale with one token file
+        locales = Dir['spec/fixtures/locales/*.en.yml']
+        tokens = ['spec/fixtures/tokens/general.yml']
+        target = File.dirname(__FILE__) + '/tmp'
 
-        expect((processed).to_yaml).to eql(File.read(processed_yaml))
-      end
+        FileUtils.mkdir_p(target) unless File.directory?(target)
 
-      it 'converts yaml to json file' do
-        processed_yaml = 'spec/fixtures/processed_en.yml'
-        converted_yaml = 'spec/fixtures/converted_en.json'
+        Liqaml.new(locales_array: locales, tokens_array: tokens, yaml_target: target, json_target: target).process_and_convert
 
-        converted = liqaml.convert_to_json(processed_yaml)
+        processed = File.read(target + '/general.en.yml')
+        converted = File.read(target + '/general.en.json')
 
-        expect(converted).to eql(File.read(converted_yaml))
+        # remove trailing whispaces when comparing 
+        expect(processed.strip).to eql(File.read(expected_yaml).strip)
+        expect(converted.strip).to eql(File.read(expected_json).strip)
       end
     end
 
@@ -54,5 +56,6 @@ RSpec.describe Liqaml do
         expect { liqaml.process_template(content, variables) }.to raise_error(Liquid::SyntaxError)
       end
     end
+
   end
 end

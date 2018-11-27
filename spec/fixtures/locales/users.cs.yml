@@ -1,0 +1,5 @@
+login: uživatelské jméno
+remember_me: zapamatovat přihlášení
+firstname: jméno
+surname: příjmení
+name: "{ gender, select, male {Jeho} female {Jeji} other {Jeho} } jmeno je {name}."

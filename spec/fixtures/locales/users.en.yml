@@ -1,0 +1,5 @@
+login: login
+remember_me: remember me
+firstname: firstname
+surname: surname
+name: "{ gender, select, male {His} female {Her} other {It's} } name is {name}."
