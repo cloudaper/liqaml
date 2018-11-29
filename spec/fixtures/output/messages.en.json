@@ -1,0 +1,5 @@
+{
+  "firstname_validation": "firstname cant be number",
+  "surname_validation": "surname cant be number",
+  "login_validation": "login must be text"
+}

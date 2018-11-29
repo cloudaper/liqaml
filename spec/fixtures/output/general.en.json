@@ -1,6 +1,6 @@
 {
   "supported_languges": "supported languages are english, german, czech, italian, french, chinese",
   "click_on_remember_me": "click on remember me",
-  "review": "This book, Lord of the Rings (foreign fantasy fiction), was written by JRR Tolkien. I liked it { liked, select, no {not too much} yes {very much} other {a bit} }",
+  "review": "book, Lord of the Rings (foreign fantasy fiction), was written by JRR Tolkien. I liked it { liked, select, no {not too much} yes {very much} other {a bit} }",
   "icu_liquid_example": "I liked it very much. His name is Jeff."
 }

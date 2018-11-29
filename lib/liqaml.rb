@@ -5,6 +5,8 @@ require 'liqaml/filters/icu_filter'
 require 'json'
 
 module Liqaml
+  class LiqamlError < StandardError; end
+
   class Liqaml
     # Raises SyntaxError when invalid Liquid syntax is used
     Liquid::Template.error_mode = :strict
@@ -14,9 +16,10 @@ module Liqaml
     def self.extract_hash(string_args)
       string_hash = {}
 
-      string_arr = string_args.split(', ')
+      string_arr = string_args.split(',').map(&:strip)
 
       string_arr.each do |s|
+        # TODO take into account only the first '-', e.g. icu: 'state-up-to-date' won't be issue
         elements = s.split('-')
         string_hash[elements[0]] = elements[1]
       end
@@ -34,9 +37,9 @@ module Liqaml
 
     # Process yaml files, convert them to json, then send new files to target folders
     def process_and_convert
-      locales_filenames = @locales_array.map { |file| File.basename(file) }
+      all_locales_filenames = @locales_array.map { |file| File.basename(file) }
 
-      locale_patterns = locales_filenames.map { |filename| filename.scan(/\..*\./) }.uniq.flatten
+      locale_patterns = all_locales_filenames.map { |filename| filename.scan(/\..*\./) }.uniq.flatten
       # e.g. => [".en.", ".cs.", ...]
 
       locale_patterns.each do |pattern|
@@ -50,6 +53,8 @@ module Liqaml
 
         # now process tokens and make new files from them
         @tokens_array.each do |token_file|
+          @file = File.basename(token_file)
+
           output_filename_base = "#{File.basename(token_file, '.yml')}.#{@locale}"
           yaml_file            = "#{@yaml_target}/#{output_filename_base}.yml"
           json_file            = "#{@json_target}/#{output_filename_base}.json"
@@ -66,9 +71,9 @@ module Liqaml
         end
       end
 
-    rescue Liquid::SyntaxError, Psych::SyntaxError => e
-      puts "Error for locale '#{@locale}'"
-      puts e
+    rescue Liquid::SyntaxError, Psych::SyntaxError, Liquid::UndefinedVariable, Liquid::UndefinedFilter => e
+      file = @file ? "(file: #{@file}) " : ''
+      raise LiqamlError.new("Error for locale '#{@locale}'#{file}- #{e}")
     end
 
     def yaml_files_to_hash(files)
@@ -89,7 +94,7 @@ module Liqaml
 
       # This block will run again unless there's no "{{ }}" unprocessed, but @process_count times the most
       @process_count.times do
-        content = Liquid::Template.parse(content).render(variables)
+        content = Liquid::Template.parse(content).render!(variables, { strict_variables: true })
 
         break if content.scan(/\{{.*?\}}/).empty?
       end
