@@ -1,4 +1,4 @@
-type: "{ artwork, select, book {book} movie {movie} other {artwork} }"
+type: "This { artwork, select, book {book} movie {movie} other {artwork} }"
 art:
   title: Lord of the Rings
   author: JRR Tolkien

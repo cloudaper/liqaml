@@ -21,7 +21,7 @@ module Liqaml
       string_arr.each do |s|
         # TODO take into account only the first '-', e.g. icu: 'state-up-to-date' won't be issue
         elements = s.split('-')
-        string_hash[elements[0]] = elements[1]
+        string_hash[elements[0]] = (elements[1..-1].join('-'))
       end
 
       string_hash.map { |k, v| [k.to_sym, v] }.to_h
@@ -49,7 +49,7 @@ module Liqaml
         # join contents of locale_files to one hash of variables
         variables_hash = yaml_files_to_hash(locale_files)
         # process these variables
-        variables = process(variables_hash.to_yaml)
+        processed_vars = process(variables_hash.to_yaml)
 
         # now process tokens and make new files from them
         @tokens_array.each do |token_file|
@@ -61,7 +61,7 @@ module Liqaml
 
           template = { @locale => yaml_files_to_hash([token_file]) }
 
-          processed_locale = process_template(template.to_yaml, variables)
+          processed_locale = process_template(template.to_yaml, processed_vars)
 
           File.open(yaml_file, 'w') { |f| f.write processed_locale }
 

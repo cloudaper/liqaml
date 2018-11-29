@@ -6,6 +6,16 @@ RSpec.describe Liqaml do
   # make Liqaml obejct to be used for testing processing methods
   let(:liqaml) { Liqaml.new(locales_array: [], tokens_array: [], yaml_target: 'yaml_target', json_target: 'json_target') }
 
+  describe 'extract_hash method' do
+    it 'extracts hash from icu filter argument' do
+      expect(Liqaml::Liqaml.extract_hash('color-blue')).to eql( { :color => 'blue' } )
+      expect(Liqaml::Liqaml.extract_hash('symbol-*')).to eql( { :symbol => '*' } )
+      expect(Liqaml::Liqaml.extract_hash('')).to eql( {} )
+      expect(Liqaml::Liqaml.extract_hash('color')).to eql( { :color => '' } )
+      expect(Liqaml::Liqaml.extract_hash('state-up-to-date')).to eql( { :state => 'up-to-date' } )
+    end
+  end
+
   describe 'processing' do
     context 'with correct syntax' do
       it 'processes simple string' do

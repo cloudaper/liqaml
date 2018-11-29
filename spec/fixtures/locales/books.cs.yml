@@ -1,4 +1,4 @@
-type: "{ artwork, select, book {kniha} movie {film} other {dilo} }"
+type: "{ artwork, select, book {Tato kniha} movie {Tento film} other {Toto dilo} }"
 art:
   title: Lord of the Rings
   author: JRR Tolkien
