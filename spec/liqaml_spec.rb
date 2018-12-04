@@ -24,8 +24,8 @@ RSpec.describe Liqaml do
         expected_json2 = 'spec/fixtures/output/messages.en.json'
 
         # test only 'en' locale
-        locales = Dir['spec/fixtures/locales/*.en.yml']
-        tokens  = Dir['spec/fixtures/tokens/*.yml']
+        locales = Dir['spec/fixtures/locales/*.en.{yml,yaml}']
+        tokens  = Dir['spec/fixtures/tokens/*.{yml,yaml}']
         target  = File.dirname(__FILE__) + '/tmp'
 
         FileUtils.mkdir_p(target) unless File.directory?(target)

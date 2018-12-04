@@ -38,7 +38,7 @@ module Liqaml
         @tokens_array.each do |token_file|
           @file = File.basename(token_file)
 
-          output_filename_base = "#{File.basename(token_file, '.yml')}.#{@locale}"
+          output_filename_base = "#{File.basename(token_file, File.extname(token_file))}.#{@locale}"
           yaml_file            = "#{@yaml_target}/#{output_filename_base}.yml"
           json_file            = "#{@json_target}/#{output_filename_base}.json"
 
