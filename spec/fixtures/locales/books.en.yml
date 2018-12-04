@@ -6,5 +6,5 @@ art:
     fiction:
       fantasy:
         foreign: foreign fantasy fiction
-description: "{{type | icu: 'artwork-book'}}, {{art.title}} ({{art.genre.fiction.fantasy.foreign}}), was written by {{art.author}}."
+description: "{{type}}, {{art.title}} ({{art.genre.fiction.fantasy.foreign}}), was written by {{art.author}}."
 liked: "I liked it { liked, select, no {not too much} yes {very much} other {a bit} }"

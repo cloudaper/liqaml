@@ -6,16 +6,6 @@ RSpec.describe Liqaml do
   # make Liqaml obejct to be used for testing processing methods
   let(:liqaml) { Liqaml.new(locales_array: [], tokens_array: [], yaml_target: 'yaml_target', json_target: 'json_target') }
 
-  describe 'extract_hash method' do
-    it 'extracts hash from icu filter argument' do
-      expect(Liqaml::Liqaml.extract_hash('color-blue')).to eql( { :color => 'blue' } )
-      expect(Liqaml::Liqaml.extract_hash('symbol-*')).to eql( { :symbol => '*' } )
-      expect(Liqaml::Liqaml.extract_hash('')).to eql( {} )
-      expect(Liqaml::Liqaml.extract_hash('color')).to eql( { :color => '' } )
-      expect(Liqaml::Liqaml.extract_hash('state-up-to-date')).to eql( { :state => 'up-to-date' } )
-    end
-  end
-
   describe 'processing' do
     context 'with correct syntax' do
       it 'processes simple string' do
@@ -25,15 +15,6 @@ RSpec.describe Liqaml do
         processed = liqaml.process_template(content, variables)
 
         expect(processed).to eql('My name is Jeff')
-      end
-
-      it 'processes string with ICU filter' do
-        content   = "{{name | icu: 'gender-male, name-Jeff', 'cs'}}"
-        variables = { 'name' => "{ gender, select, male {His} female {Her} other {It's} } name is {name}"}
-
-        processed = liqaml.process_template(content, variables)
-
-        expect(processed).to eql('His name is Jeff')
       end
 
       it 'processes and converts yaml files' do

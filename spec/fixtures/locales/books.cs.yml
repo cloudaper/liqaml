@@ -6,5 +6,5 @@ art:
     fiction:
       fantasy:
         foreign: "zahranicna fantasy fikce"
-description: "{{type | icu: 'artwork-book'}}, {{art.title}} ({{art.genre.fiction.fantasy.foreign}}), byla napsana autorem {{art.author}}."
+description: "{{type}}, {{art.title}} ({{art.genre.fiction.fantasy.foreign}}), byla napsana autorem {{art.author}}."
 liked: "{ liked, select, no {nelibila se mi} yes {libila se mi} other {trochu se mi libila} }"

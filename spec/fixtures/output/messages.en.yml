@@ -1,4 +1,3 @@
----
 en:
   firstname_validation: "firstname cant be number"
   surname_validation: "surname cant be number"
