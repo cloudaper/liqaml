@@ -1,7 +1,6 @@
 require 'liqaml/version'
 require 'message_format'
 require 'liquid'
-require 'liqaml/filters/icu_filter'
 require 'json'
 
 module Liqaml
@@ -10,22 +9,6 @@ module Liqaml
   class Liqaml
     # Raises SyntaxError when invalid Liquid syntax is used
     Liquid::Template.error_mode = :strict
-
-    Liquid::Template.register_filter(IcuFilter)
-
-    def self.extract_hash(string_args)
-      string_hash = {}
-
-      string_arr = string_args.split(',').map(&:strip)
-
-      string_arr.each do |s|
-        # TODO take into account only the first '-', e.g. icu: 'state-up-to-date' won't be issue
-        elements = s.split('-')
-        string_hash[elements[0]] = (elements[1..-1].join('-'))
-      end
-
-      string_hash.map { |k, v| [k.to_sym, v] }.to_h
-    end
 
     def initialize(locales_array, tokens_array, yaml_target, json_target, process_count)
       @locales_array = locales_array
@@ -62,11 +45,10 @@ module Liqaml
           template = { @locale => yaml_files_to_hash([token_file]) }
 
           processed_locale = process_template(template.to_yaml, processed_vars)
-
+          processed_locale = processed_locale.gsub("---\n", '')
           File.open(yaml_file, 'w') { |f| f.write processed_locale }
 
           json_locale = convert_to_json(yaml_file)
-
           File.open(json_file, 'w') { |f| f.write json_locale }
         end
       end
